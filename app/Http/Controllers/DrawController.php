@@ -84,7 +84,8 @@ class DrawController extends Controller
     {
         try {
             $client = new \GuzzleHttp\Client();
-            $response = $client->post('http://localhost:3000/updateWinners', [
+            $socketUrl = env('SOCKETIO_URL', 'http://localhost:3000');
+            $response = $client->post($socketUrl . '/updateWinners', [
                 'json' => [
                     'sessionId' => $sessionId,
                     'winners' => $winners,
