@@ -68,10 +68,11 @@
             modal.classList.add('hidden');
             input.value = ""; // Reset input
         }
+    </script>
 
-        // --- REALTIME Dengan Socket.IO ---
-        const socket = io.connect('http://localhost:3000'); // Ganti URL jika beda domain/port
-
+    @include('partials.socketio-config')
+    
+    <script>
         @foreach ($sessions as $session)
             // Dengarkan pemenang terbaru untuk setiap sesi
             socket.on('winnersUpdated', (data) => {
