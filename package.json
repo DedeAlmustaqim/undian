@@ -3,7 +3,8 @@
     "type": "commonjs",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "socket": "node socket-server.js"
     },
     "devDependencies": {
         "axios": "^1.6.4",
