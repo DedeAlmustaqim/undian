@@ -14,4 +14,9 @@ class DrawSession extends Model
     {
         return $this->hasMany(Winner::class);
     }
+
+    public function validWinners()
+    {
+        return $this->hasMany(Winner::class)->where('valid', true);
+    }
 }

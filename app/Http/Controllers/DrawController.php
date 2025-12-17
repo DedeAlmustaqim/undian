@@ -27,7 +27,7 @@ class DrawController extends Controller
         }
 
         // Kirim hasil undian ke server Socket.IO
-        $this->sendWinnersToSocketIO($sessionId, $winners);
+        $this->sendWinnersToSocketIO($sessionId, $this->transformWinnersData($winners));
 
         // Redirect ke halaman sesi undian atau hasil
         return redirect()->route('sessions.index')->with('success', 'Undian berhasil dimulai.');
@@ -46,7 +46,7 @@ class DrawController extends Controller
 
         // Pilih pemenang baru
         $newWinner = Participant::inRandomOrder()
-            ->whereNotIn('id', Winner::where('draw_session_id', $sessionId)->pluck('participant_id'))
+            ->whereNotIn('id', Winner::forSession($sessionId)->pluck('participant_id'))
             ->first();
 
         Winner::create([
@@ -56,31 +56,39 @@ class DrawController extends Controller
         ]);
 
         // Kirim hasil undian terbaru ke server Socket.IO
-        $updatedWinners = Winner::where('draw_session_id', $sessionId)
-            ->with('participant')
-            ->where('valid', true)
-            ->get()
-            ->map(fn($winner) => [
-                'name' => $winner->participant->name,
-                'code' => $winner->participant->code,
-            ]);
+        $updatedWinners = $this->getValidWinners($sessionId);
 
-        $this->sendWinnersToSocketIO($sessionId, $updatedWinners);
+        $this->sendWinnersToSocketIO($sessionId, $this->transformWinnersData($updatedWinners));
 
         return redirect()->route('control')->with('success', 'Pemenang berhasil direroll dan diperbarui.');
+    }
+
+    private function getValidWinners($sessionId)
+    {
+        return Winner::forSession($sessionId)
+            ->valid()
+            ->with('participant')
+            ->get()
+            ->pluck('participant');
+    }
+
+    private function transformWinnersData($winners)
+    {
+        return $winners->map(fn($winner) => [
+            'name' => $winner->name,
+            'code' => $winner->code,
+        ]);
     }
 
     private function sendWinnersToSocketIO($sessionId, $winners)
     {
         try {
             $client = new \GuzzleHttp\Client();
-            $response = $client->post('http://localhost:3000/updateWinners', [
+            $socketUrl = env('SOCKETIO_URL', 'http://localhost:3000');
+            $response = $client->post($socketUrl . '/updateWinners', [
                 'json' => [
                     'sessionId' => $sessionId,
-                    'winners' => $winners->map(fn($winner) => [
-                        'name' => $winner->name,
-                        'code' => $winner->code,
-                    ]),
+                    'winners' => $winners,
                 ],
             ]);
         } catch (\Exception $e) {

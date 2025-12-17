@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Display</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body class="bg-gray-800 text-white">
     <div class="container mx-auto text-center py-10">
@@ -17,9 +16,9 @@
         </div>
     </div>
 
+    @include('partials.socketio-config')
+    
     <script>
-        // Konfigurasi Socket.IO
-        const socket = io.connect("http://localhost:3000"); // Ubah jika server Socket.IO berjalan di domain lain
         const sessionId = "{{ $sessionId }}"; // Ambil session ID dari Laravel
 
         // Masuk ke sesi undian

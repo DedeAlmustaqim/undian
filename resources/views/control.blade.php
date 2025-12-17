@@ -16,7 +16,7 @@
                 <tr>
                     <td class="px-4 py-2 border-b">{{ $session->name }}</td>
                     <td class="px-4 py-2 border-b text-center">{{ $session->number_of_winners }}</td>
-                    <td class="px-4 py-2 border-b text-center" id="winner-count-session-{{ $session->id }}">{{ $session->winner_count }}</td>
+                    <td class="px-4 py-2 border-b text-center" id="winner-count-session-{{ $session->id }}">{{ $session->valid_winners_count }}</td>
                     <td class="px-4 py-2 border-b text-center">
                         <!-- Tombol Mulai Undian -->
                         <form action="{{ route('draw.start', $session->id) }}" method="POST" class="inline-block">
@@ -68,10 +68,11 @@
             modal.classList.add('hidden');
             input.value = ""; // Reset input
         }
+    </script>
 
-        // --- REALTIME Dengan Socket.IO ---
-        const socket = io.connect('http://localhost:3000'); // Ganti URL jika beda domain/port
-
+    @include('partials.socketio-config')
+    
+    <script>
         @foreach ($sessions as $session)
             // Dengarkan pemenang terbaru untuk setiap sesi
             socket.on('winnersUpdated', (data) => {
