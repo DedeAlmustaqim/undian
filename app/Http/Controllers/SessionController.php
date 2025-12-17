@@ -29,11 +29,6 @@ class SessionController extends Controller
         // Ambil semua sesi undian dengan jumlah pemenang yang valid
         $sessions = DrawSession::withCount('validWinners')->get();
 
-        // Gunakan accessor untuk mendapatkan winner_count
-        foreach ($sessions as $session) {
-            $session->winner_count = $session->valid_winners_count;
-        }
-
         return view('control', compact('sessions'));
     }
 }

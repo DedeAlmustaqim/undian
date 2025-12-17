@@ -19,9 +19,4 @@ class DrawSession extends Model
     {
         return $this->hasMany(Winner::class)->where('valid', true);
     }
-
-    public function getValidWinnerCountAttribute()
-    {
-        return $this->validWinners()->count();
-    }
 }

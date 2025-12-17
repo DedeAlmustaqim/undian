@@ -16,7 +16,7 @@
                 <tr>
                     <td class="px-4 py-2 border-b">{{ $session->name }}</td>
                     <td class="px-4 py-2 border-b text-center">{{ $session->number_of_winners }}</td>
-                    <td class="px-4 py-2 border-b text-center" id="winner-count-session-{{ $session->id }}">{{ $session->winner_count }}</td>
+                    <td class="px-4 py-2 border-b text-center" id="winner-count-session-{{ $session->id }}">{{ $session->valid_winners_count }}</td>
                     <td class="px-4 py-2 border-b text-center">
                         <!-- Tombol Mulai Undian -->
                         <form action="{{ route('draw.start', $session->id) }}" method="POST" class="inline-block">
