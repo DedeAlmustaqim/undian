@@ -74,13 +74,24 @@ class DrawController extends Controller
     {
         try {
             $client = new \GuzzleHttp\Client();
+            
+            // Pastikan $winners dalam format yang benar
+            $winnersArray = $winners->map(function($winner) {
+                // Jika $winner adalah model Participant atau Winner dengan relasi participant
+                if ($winner instanceof \App\Models\Participant) {
+                    return [
+                        'name' => $winner->name,
+                        'code' => $winner->code,
+                    ];
+                }
+                // Jika sudah dalam format array, kembalikan sebagaimana adanya
+                return $winner;
+            })->toArray();
+            
             $response = $client->post('http://localhost:3000/updateWinners', [
                 'json' => [
                     'sessionId' => $sessionId,
-                    'winners' => $winners->map(fn($winner) => [
-                        'name' => $winner->name,
-                        'code' => $winner->code,
-                    ]),
+                    'winners' => $winnersArray,
                 ],
             ]);
         } catch (\Exception $e) {

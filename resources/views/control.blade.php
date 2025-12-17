@@ -72,14 +72,22 @@
         // --- REALTIME Dengan Socket.IO ---
         const socket = io.connect('http://localhost:3000'); // Ganti URL jika beda domain/port
 
+        // Join semua session yang ada
         @foreach ($sessions as $session)
-            // Dengarkan pemenang terbaru untuk setiap sesi
-            socket.on('winnersUpdated', (data) => {
-                if (data.sessionId === {{ $session->id }}) {
-                    // Perbarui jumlah pemenang di tabel
-                    document.getElementById('winner-count-session-{{ $session->id }}').innerText = data.winners.length;
-                }
-            });
+            socket.emit('joinSession', '{{ $session->id }}');
         @endforeach
+
+        // Dengarkan pemenang terbaru untuk setiap sesi
+        socket.on('winnersUpdated', (data) => {
+            // Data berisi { sessionId, winners }
+            if (data && data.sessionId && data.winners) {
+                // Sanitasi sessionId untuk keamanan DOM
+                const sessionId = String(data.sessionId).replace(/[^a-zA-Z0-9_-]/g, '');
+                const winnerCountElement = document.getElementById('winner-count-session-' + sessionId);
+                if (winnerCountElement) {
+                    winnerCountElement.innerText = data.winners.length;
+                }
+            }
+        });
     </script>
 @endsection
