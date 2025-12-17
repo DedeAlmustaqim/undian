@@ -11,6 +11,58 @@
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
+## Setup & Running the Application
+
+### Installation
+
+1. Install PHP dependencies:
+```bash
+composer install
+```
+
+2. Install Node.js dependencies:
+```bash
+npm install
+```
+
+3. Configure your environment:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+4. Run database migrations:
+```bash
+php artisan migrate
+```
+
+### Running the Application
+
+This application requires two processes to run simultaneously:
+
+1. **Start the Laravel application** (in one terminal):
+```bash
+php artisan serve
+```
+
+2. **Start the Socket.IO server** (in another terminal):
+```bash
+npm run socket
+```
+
+The Socket.IO server handles real-time updates for the lottery drawing system. Make sure both services are running for the application to work properly.
+
+### Access the Application
+
+- Main application: http://localhost:8000
+- Socket.IO server: http://localhost:3000
+- Control panel: http://localhost:8000/control
+- Display monitor: http://localhost:8000/display/{sessionId}
+
+## About Laravel
+
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+
 - [Simple, fast routing engine](https://laravel.com/docs/routing).
 - [Powerful dependency injection container](https://laravel.com/docs/container).
 - Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
