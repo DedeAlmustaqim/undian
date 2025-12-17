@@ -1,9 +1,18 @@
-const io = require("socket.io")(3000, {
+const express = require("express");
+const http = require("http");
+const socketIO = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server, {
     cors: {
         origin: "*", // Ganti sesuai domain jika tidak menggunakan localhost
         methods: ["GET", "POST"]
     }
 });
+
+// Middleware untuk parsing JSON
+app.use(express.json());
 
 let sessionResults = {};
 
@@ -18,15 +27,42 @@ io.on("connection", (socket) => {
 
         // Jika hasil undian sudah tersedia, kirim langsung ke klien
         if (sessionResults[sessionId]) {
-            socket.emit("winnersUpdated", sessionResults[sessionId]);
+            socket.emit("winnersUpdated", {
+                sessionId: sessionId,
+                winners: sessionResults[sessionId]
+            });
         }
     });
 
     // Update pemenang ke semua klien di sesi tertentu
     socket.on("updateWinners", ({ sessionId, winners }) => {
         sessionResults[sessionId] = winners; // Simpan hasil undian
-        io.to(sessionId).emit("winnersUpdated", winners); // Kirim ke klien
+        io.to(sessionId).emit("winnersUpdated", {
+            sessionId: sessionId,
+            winners: winners
+        }); // Kirim ke klien
+        console.log(`Winners updated for session ${sessionId}`);
     });
 });
 
-console.log("Socket.IO server berjalan di http://localhost:3000");
+// HTTP endpoint untuk update winners (untuk integrasi dengan Laravel)
+app.post("/updateWinners", (req, res) => {
+    const { sessionId, winners } = req.body;
+    
+    if (!sessionId || !winners) {
+        return res.status(400).json({ error: "sessionId and winners are required" });
+    }
+
+    sessionResults[sessionId] = winners; // Simpan hasil undian
+    io.to(sessionId).emit("winnersUpdated", {
+        sessionId: sessionId,
+        winners: winners
+    }); // Kirim ke klien
+    console.log(`Winners updated via HTTP for session ${sessionId}`);
+    
+    res.json({ success: true, message: "Winners updated successfully" });
+});
+
+server.listen(3000, () => {
+    console.log("Socket.IO server berjalan di http://localhost:3000");
+});

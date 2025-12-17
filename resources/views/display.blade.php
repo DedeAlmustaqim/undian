@@ -26,27 +26,32 @@
         socket.emit("joinSession", sessionId);
 
         // Dengarkan update pemenang
-        socket.on("winnersUpdated", (winners) => {
+        socket.on("winnersUpdated", (data) => {
+            // Data bisa berupa { sessionId, winners } atau langsung array winners
+            const winners = data.winners || data;
+            
             const winnerList = document.getElementById("winner-list");
             winnerList.innerHTML = ""; // Clear list sebelumnya
 
-            winners.forEach(winner => {
-                const winnerItem = document.createElement("div");
-                winnerItem.className = "p-4 bg-gray-900 rounded-lg shadow-lg";
+            if (Array.isArray(winners) && winners.length > 0) {
+                winners.forEach(winner => {
+                    const winnerItem = document.createElement("div");
+                    winnerItem.className = "p-4 bg-gray-900 rounded-lg shadow-lg";
 
-                const winnerName = document.createElement("h3");
-                winnerName.className = "text-2xl font-bold text-yellow-400";
-                winnerName.textContent = winner.name;
+                    const winnerName = document.createElement("h3");
+                    winnerName.className = "text-2xl font-bold text-yellow-400";
+                    winnerName.textContent = winner.name;
 
-                const winnerCode = document.createElement("p");
-                winnerCode.className = "text-lg text-gray-400";
-                winnerCode.textContent = `Kode: ${winner.code}`;
+                    const winnerCode = document.createElement("p");
+                    winnerCode.className = "text-lg text-gray-400";
+                    winnerCode.textContent = `Kode: ${winner.code}`;
 
-                winnerItem.appendChild(winnerName);
-                winnerItem.appendChild(winnerCode);
+                    winnerItem.appendChild(winnerName);
+                    winnerItem.appendChild(winnerCode);
 
-                winnerList.appendChild(winnerItem);
-            });
+                    winnerList.appendChild(winnerItem);
+                });
+            }
         });
     </script>
 </body>
