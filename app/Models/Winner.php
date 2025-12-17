@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Winner extends Model
 {
+    use HasFactory;
+    
     protected $fillable = ['draw_session_id', 'participant_id', 'valid'];
 
     public function participant()
@@ -17,5 +19,15 @@ class Winner extends Model
     public function session()
     {
         return $this->belongsTo(DrawSession::class, 'draw_session_id');
+    }
+
+    public function scopeValid($query)
+    {
+        return $query->where('valid', true);
+    }
+
+    public function scopeForSession($query, $sessionId)
+    {
+        return $query->where('draw_session_id', $sessionId);
     }
 }
