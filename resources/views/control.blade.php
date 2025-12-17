@@ -81,7 +81,9 @@
         socket.on('winnersUpdated', (data) => {
             // Data berisi { sessionId, winners }
             if (data && data.sessionId && data.winners) {
-                const winnerCountElement = document.getElementById('winner-count-session-' + data.sessionId);
+                // Sanitasi sessionId untuk keamanan DOM
+                const sessionId = String(data.sessionId).replace(/[^a-zA-Z0-9_-]/g, '');
+                const winnerCountElement = document.getElementById('winner-count-session-' + sessionId);
                 if (winnerCountElement) {
                     winnerCountElement.innerText = data.winners.length;
                 }

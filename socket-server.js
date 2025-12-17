@@ -49,8 +49,12 @@ io.on("connection", (socket) => {
 app.post("/updateWinners", (req, res) => {
     const { sessionId, winners } = req.body;
     
-    if (!sessionId || !winners) {
-        return res.status(400).json({ error: "sessionId and winners are required" });
+    if (!sessionId || typeof sessionId !== 'string' || sessionId.trim() === '') {
+        return res.status(400).json({ error: "sessionId must be a non-empty string" });
+    }
+    
+    if (!Array.isArray(winners)) {
+        return res.status(400).json({ error: "winners must be an array" });
     }
 
     sessionResults[sessionId] = winners; // Simpan hasil undian

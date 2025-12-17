@@ -77,8 +77,8 @@ class DrawController extends Controller
             
             // Pastikan $winners dalam format yang benar
             $winnersArray = $winners->map(function($winner) {
-                // Jika $winner adalah model Participant, ambil langsung name dan code
-                if (is_object($winner) && isset($winner->name) && isset($winner->code)) {
+                // Jika $winner adalah model Participant atau Winner dengan relasi participant
+                if ($winner instanceof \App\Models\Participant) {
                     return [
                         'name' => $winner->name,
                         'code' => $winner->code,
